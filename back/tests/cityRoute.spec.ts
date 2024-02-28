@@ -1,8 +1,8 @@
-import { CityController } from './../src/infra/express/controllers/city.controller';
+import { CityController } from '../src/infra/express/controllers/city.controller';
 import App from '../src/infra/express/app';
 import { ICityDal } from '../src/services/interfaces/dal/city.dal.interface';
-import { CityService } from './../src/services/city.service';
-import CityRouter from './../src/infra/express/routers/city.route';
+import { CityService } from '../src/services/city.service';
+import CityRouter from '../src/infra/express/routers/city.route';
 import * as request from 'supertest';
 import Logger from '../src/infra/winston/logger';
 
