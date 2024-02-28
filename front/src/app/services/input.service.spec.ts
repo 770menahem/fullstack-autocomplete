@@ -1,42 +1,70 @@
+// input.service.spec.ts
+
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 import { InputService } from './input.service';
 import { environment } from '../../environments/environment.development';
+import { of } from 'rxjs';
 
 describe('InputService', () => {
     let service: InputService;
-    let httpTestingController: HttpTestingController;
+    let httpMock: HttpTestingController;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
         });
-
         service = TestBed.inject(InputService);
-        httpTestingController = TestBed.inject(HttpTestingController);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    afterEach(() => {
-        httpTestingController.verify();
-    });
+    it('should be return a list of cities', () => {
+        const input = 'test';
+        const response = [{ name: 'test' }];
 
-    it('should make API call and return cities', () => {
-        const mockCities: any[] = [
-            {
-                name: 'Chicago',
-            },
-        ];
-
-        service.getCities('chicago').subscribe((cities) => {
-            expect((cities as string[]).length).toBe(1);
-            expect(cities).toEqual(mockCities);
+        service.getCities(input).subscribe((cities) => {
+            expect(cities).toEqual(response);
         });
 
-        const req = httpTestingController.expectOne(`${environment.backend_url}/cities?term=chicago`);
+        const req = httpMock.expectOne({
+            method: 'GET',
+            url: `${environment.backend_url}/city/search?city=${input}`,
+        });
 
-        expect(req.request.method).toEqual('GET');
+        req.flush(response);
+    });
 
-        req.flush(mockCities);
+    it('should be return empty list of cities', () => {
+        const input = 'test';
+        const response: { name: string }[] = [];
+
+        service.getCities(input).subscribe((cities) => {
+            expect(cities).toEqual(response);
+        });
+
+        const req = httpMock.expectOne({
+            method: 'GET',
+            url: `${environment.backend_url}/city/search?city=${input}`,
+        });
+
+        req.flush(response);
+    });
+
+    it('should be return 400 error', () => {
+        const input = 't';
+        const response: { name: string }[] = [];
+
+        service.getCities(input).subscribe((cities) => {
+            expect(cities).not.toEqual(response);
+        });
+
+        const req = httpMock.expectOne({
+            method: 'GET',
+            url: `${environment.backend_url}/city/search?city=${input}`,
+        });
+        req.flush(response);
+
+        // req.flush('API error', { status: 400, statusText: 'Bad Request' });
     });
 });
