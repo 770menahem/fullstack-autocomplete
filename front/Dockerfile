@@ -1,7 +1,11 @@
-FROM node:12.7-alpine
+FROM node:20-alpine3.18
+
 WORKDIR /usr/src/app
-COPY package.json package-lock.json ./
+
+COPY . /usr/src/app
+
+RUN npm install -g @angular/cli
+
 RUN npm install
-COPY . .
-RUN npm run build
-RUN npm start
+
+CMD ["ng", "serve", "--host", "0.0.0.0"]
