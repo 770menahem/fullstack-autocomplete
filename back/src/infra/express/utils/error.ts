@@ -39,6 +39,4 @@ export const errorMiddleware = (error: Error, _req: express.Request, res: expres
             message: error.message,
         });
     }
-
-    console.error(JSON.stringify(error));
 };
