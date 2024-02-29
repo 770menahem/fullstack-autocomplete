@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputService } from '../../services/input.service';
 import { City } from './../../../types/city.type';
 import { debounceTime } from 'rxjs/operators';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-input',
@@ -13,9 +13,10 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
     templateUrl: './input.component.html',
     styleUrl: './input.component.css',
 })
-export class InputComponent implements OnInit {
-    placeHolder = 'Find the best city for you!';
+export class InputComponent implements OnInit, OnDestroy {
+    subscription = new Subscription();
     input = new FormControl();
+    placeHolder = 'Find the best city for you!';
     cities: string[] = [];
     error = '';
     showOptions = false;
@@ -23,7 +24,11 @@ export class InputComponent implements OnInit {
     constructor(private inputService: InputService) {}
 
     ngOnInit() {
-        this.input.valueChanges.pipe(debounceTime(200)).subscribe((userInput) => this.onInput(userInput));
+        this.subscription.add(this.input.valueChanges.pipe(debounceTime(200)).subscribe((userInput) => this.onInput(userInput)));
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
 
     onInput(userInput: string) {
@@ -33,13 +38,14 @@ export class InputComponent implements OnInit {
         }
 
         this.inputService.getCities(userInput).subscribe({
-            next: (resp: City[]) => {
+            next: (cities: City[]) => {
                 this.error = '';
-                this.cities = resp.map((city: City) => city.name);
+                this.cities = cities.map(({ name }) => name);
                 this.showOptions = true;
             },
-            error: (e) => {
+            error: () => {
                 this.error = 'Something went wrong';
+                this.showOptions = false;
             },
         });
     }

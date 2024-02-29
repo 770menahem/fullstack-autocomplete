@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InputComponent } from './input.component';
 import { InputService } from '../../services/input.service';
 import { of, throwError } from 'rxjs';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('InputComponent', () => {
     let component: InputComponent;
@@ -12,10 +11,17 @@ describe('InputComponent', () => {
     const mockCities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }];
     const mockCitiesStr = ['Tel Aviv', 'Telangana'];
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [InputComponent, HttpClientTestingModule],
-            providers: [InputService],
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [InputComponent],
+            providers: [
+                {
+                    provide: InputService,
+                    useValue: {
+                        getCities: () => {},
+                    },
+                },
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(InputComponent);
@@ -85,10 +91,11 @@ describe('InputComponent', () => {
         input.value = userInput;
         input.dispatchEvent(new Event('input'));
 
-        fixture.detectChanges();
         await fixture.whenStable();
+        fixture.detectChanges();
 
-        expect(component.error).toBe('Something went wrong');
+        const p = fixture.nativeElement.querySelector('p');
+        expect(p.textContent).toContain('Something went wrong');
     });
 
     it('should show "not found" when input valid and no cities', async () => {
