@@ -3,8 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InputComponent } from './input.component';
 import { InputService } from '../../services/input.service';
 import { of, throwError } from 'rxjs';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('InputComponent', () => {
@@ -14,7 +12,7 @@ describe('InputComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [InputComponent, CommonModule, FormsModule, ReactiveFormsModule, HttpClientTestingModule],
+            imports: [InputComponent, HttpClientTestingModule],
             providers: [InputService],
         }).compileComponents();
 
@@ -80,7 +78,7 @@ describe('InputComponent', () => {
         expect(component.error).toBe('Something went wrong');
     });
 
-    it('should show options when cities and input are valid', async () => {
+    it('should show cities when cities and input are valid', async () => {
         const userInput = 'tel';
         const cities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }]; // Example response
 
@@ -100,7 +98,7 @@ describe('InputComponent', () => {
         expect(li.length).toBe(cities.length);
     });
 
-    it('should not show options when input short', async () => {
+    it('should not show cities when input short', async () => {
         const userInput = 't';
         const cities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }]; // Example response
 
