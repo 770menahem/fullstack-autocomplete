@@ -1,9 +1,9 @@
 <div class="search">
-    <input type="text" [(ngModel)]="input" (ngModelChange)="onInput()" placeholder="{{ placeHolder }}" list="listId" />
+    <input type="text" [formControl]="input" placeholder="{{ placeHolder }}" list="listId" />
 
     <p *ngIf="error">{{ error }}</p>
     <div class="optionList">
-        <ul *ngIf="input.length >= 2 && showOptions" class="option">
+        <ul *ngIf="input.value?.length >= 2 && showOptions" class="option">
             <li *ngFor="let city of cities">{{ city }}</li>
             <li *ngIf="cities.length === 0">No result found</li>
         </ul>
