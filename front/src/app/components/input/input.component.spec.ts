@@ -17,15 +17,15 @@ describe('InputComponent', () => {
         }).compileComponents();
 
         fixture = TestBed.createComponent(InputComponent);
-        inputService = TestBed.inject(InputService); // Inject InputService
+        inputService = TestBed.inject(InputService);
 
         component = fixture.componentInstance;
     });
 
     it('should update cities on input change', async () => {
         const userInput = 'tel';
-        const cities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }]; // Example response
-        spyOn(inputService, 'getCities').and.returnValue(of(cities)); // Mocking getCities method
+        const cities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }];
+        spyOn(inputService, 'getCities').and.returnValue(of(cities));
 
         fixture.detectChanges();
 
@@ -44,8 +44,8 @@ describe('InputComponent', () => {
 
     it('should not get cities below 2 characters', async () => {
         const userInput = 't';
-        const cities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }]; // Example response
-        spyOn(inputService, 'getCities').and.returnValue(of(cities)); // Mocking getCities method
+        const cities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }];
+        spyOn(inputService, 'getCities').and.returnValue(of(cities));
 
         fixture.detectChanges();
 
@@ -64,7 +64,7 @@ describe('InputComponent', () => {
 
     it('should handle error', async () => {
         const userInput = 'tel';
-        spyOn(inputService, 'getCities').and.returnValue(throwError(() => new Error('Something went wrong'))); // Mocking getCities method
+        spyOn(inputService, 'getCities').and.returnValue(throwError(() => new Error('Something went wrong')));
 
         fixture.detectChanges();
 
@@ -80,7 +80,7 @@ describe('InputComponent', () => {
 
     it('should show cities when cities and input are valid', async () => {
         const userInput = 'tel';
-        const cities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }]; // Example response
+        const cities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }];
 
         component.cities = cities.map((city) => city.name);
         component.error = '';
@@ -100,7 +100,7 @@ describe('InputComponent', () => {
 
     it('should not show cities when input short', async () => {
         const userInput = 't';
-        const cities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }]; // Example response
+        const cities = [{ name: 'Tel Aviv' }, { name: 'Telangana' }];
 
         component.cities = cities.map((city) => city.name);
         component.error = '';
@@ -120,7 +120,7 @@ describe('InputComponent', () => {
 
     it('should show "not found" when input valid and no cities', async () => {
         const userInput = 'tel';
-        const cities: { name: string }[] = []; // Example response
+        const cities: { name: string }[] = [];
 
         component.cities = cities.map((city) => city.name);
         component.error = '';
@@ -137,5 +137,45 @@ describe('InputComponent', () => {
 
         expect(li.length).toBe(1);
         expect(li[0].textContent).toContain('No result found');
+    });
+
+    it('should remove the error when input is valid', async () => {
+        const userInput = 'tel';
+
+        spyOn(inputService, 'getCities').and.returnValue(of([{ name: 'Tel Aviv' }, { name: 'Telangana' }]));
+        const input = fixture.nativeElement.querySelector('input');
+        component.error = 'Something went wrong';
+
+        fixture.detectChanges();
+
+        input.value = userInput;
+
+        input.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+
+        await fixture.whenStable();
+
+        expect(component.error).toBe('');
+    });
+
+    it('should not send request each input change', async () => {
+        const userInput = 'tel';
+
+        spyOn(inputService, 'getCities').and.returnValue(of([{ name: 'Tel Aviv' }, { name: 'Telangana' }]));
+        const input = fixture.nativeElement.querySelector('input');
+
+        fixture.detectChanges();
+
+        input.value = userInput;
+        input.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+
+        input.value = userInput + 'a';
+        input.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+
+        await fixture.whenStable();
+
+        expect(inputService.getCities).toHaveBeenCalledTimes(1);
     });
 });

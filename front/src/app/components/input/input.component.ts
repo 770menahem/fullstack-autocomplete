@@ -27,8 +27,6 @@ export class InputComponent implements OnInit {
     }
 
     onInput(userInput: string) {
-        console.log('userInput', userInput);
-
         if (userInput.length < 2) {
             this.showOptions = false;
             return;
