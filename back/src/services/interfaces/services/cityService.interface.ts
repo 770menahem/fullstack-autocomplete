@@ -1,5 +1,5 @@
-import City from '../../../types/city.type';
+import { CityDto } from '../dto/city.dto';
 
 export interface ICityService {
-    searchCity(txt: string): Promise<City[] | null>;
+    searchCity(txt: string): Promise<CityDto[] | null>;
 }

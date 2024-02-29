@@ -1,25 +1,10 @@
 import { Connection, FilterQuery, Model, Schema } from 'mongoose';
-import config from '../../../config/config';
-import { readFileSync } from 'fs';
 
-//TODO: MAPPER ?!
 export abstract class BaseRepository<T> {
     public _model: Model<T>;
 
     constructor(db: Connection, modelName: string, schema: Schema<T>) {
         this._model = db.model<T>(modelName, schema);
-
-        if (config.mongo.needSeed) {
-            this.seedDB();
-        }
-    }
-
-    async seedDB() {
-        const data = JSON.parse(readFileSync('data.json', 'utf8'));
-        await this._model.deleteMany({});
-        await this._model.insertMany([...new Set<string>(data)].map((city: string) => ({ name: city })));
-
-        console.log('Seeded DB');
     }
 
     async create(item: T): Promise<T> {
