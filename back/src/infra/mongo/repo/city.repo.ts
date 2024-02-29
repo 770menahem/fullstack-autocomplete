@@ -16,7 +16,7 @@ export class CityRepo extends BaseRepository<City> implements ICityDal {
     }
 
     async seedDB() {
-        const data = JSON.parse(readFileSync('data.json', 'utf8'));
+        const data = JSON.parse(readFileSync(__dirname + '/../../../../data.json', 'utf8'));
         await this._model.deleteMany({});
 
         await this._model.insertMany([...new Set<string>(data)].map((city: string) => ({ name: city, options: splitWordToPrefixes(city) })));
